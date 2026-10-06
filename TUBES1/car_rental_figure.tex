@@ -1,0 +1,35 @@
+% Vector reconstruction of Figure 2.72; coordinates follow the reference image.
+\begin{tikzpicture}[x=1bp,y=1bp,
+  line width=0.65bp,
+  every node/.style={font=\fontsize{10}{12}\selectfont,inner sep=0pt},
+  location/.style={circle,draw,fill=white,minimum size=18bp,inner sep=0pt}]
+  % Match the reference image's canvas and whitespace for unchanged placement.
+  \path[use as bounding box] (-112,-72) rectangle (350,154);
+  \draw (0,0) -- (0,136) -- (206,136) -- (206,0) -- cycle;
+
+  \node[location] at (0,97) {1};
+  \node[location] at (0,39) {2};
+  \node[location] at (206,68) {3};
+  \node[anchor=east] at (-13,97) {Air terminal 1};
+  \node[anchor=east] at (-13,39) {Air terminal 2};
+  \node[anchor=west] at (220,68) {Car rental};
+
+  \node at (103,145) {3};
+  \node at (103,-10) {3};
+  \node[anchor=east] at (-5,120) {0.5};
+  \node[anchor=east] at (-5,68) {1};
+  \node[anchor=east] at (-5,15) {0.5};
+  \node[anchor=west] at (211,100) {1};
+  \node[anchor=west] at (211,34) {1};
+
+  % The bus overlays the road, as in the textbook, with a rightward arrow.
+  \draw[fill=white,rounded corners=5bp] (148,-5) rectangle (184,5);
+  \draw[-{Stealth[length=5bp,width=3bp]},line width=0.55bp]
+    (150,14) -- (183,14);
+  \node at (166,-16) {Bus};
+
+  \node[anchor=west,font=\fontsize{11}{13}\selectfont\bfseries]
+    at (-69,-35) {FIGURE 2.72};
+  \node[anchor=west,font=\fontsize{11}{13}\selectfont]
+    at (-69,-48) {A car rental system.};
+\end{tikzpicture}%

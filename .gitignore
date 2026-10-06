@@ -1,0 +1,15 @@
+# Compiled simulation and temporary TeX/editor artifacts
+/TUBES1/tubes1
+*.o
+*.aux
+*.log
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.out.ps
+*.bak
+*.swp
+.env
+.env.*
+# Keep demo tubes1.out and the final PDF tracked intentionally.

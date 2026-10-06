@@ -1,0 +1,53 @@
+Car-rental bus simulation using SIMLIB
+Problem 2.38 -- 80-hour run
+
+Time unit: minute (internal simulation: hour). Distance unit: mile.
+Locations and arrival rates:
+  1 Air terminal 1       14.000 people/hour
+  2 Air terminal 2       10.000 people/hour
+  3 Car rental           24.000 people/hour
+Bus capacity: 20 people; speed: 30.000 miles/hour
+Counterclockwise route: 3 -> 1 -> 2 -> 3
+Travel distances: 3->1 = 4.5, 1->2 = 1.0, 2->3 = 4.5 miles
+
+(a)-(b) Queue length and queue-delay statistics
+Location             Avg #      Max #   Avg delay (min) N delay  Max delay  Min delay
+--------------------------------------------------------------------------------------
+Air terminal 1         7.3677         27      31.4140         1120    91.9342     0.0000
+Air terminal 2         4.8875         17      29.8196          784   130.8598     0.0000
+Car rental             9.3210         29      24.1302         1854    67.4846     0.0125
+
+(c) Number of people on the bus
+Time-average number on bus: 13.8530 people
+Maximum number on bus:      20 people
+
+(d) Bus stop duration statistics (minutes)
+Location             Average       N       Maximum       Minimum
+------------------------------------------------------------------
+Air terminal 1         6.6982          110    10.1706     5.0000
+Air terminal 2         5.4732          110     9.2866     5.0000
+Car rental            11.4018          110    13.7431     5.5718
+
+(e) Bus loop duration (departure from location 3 to next departure)
+Average: 43.5733 min; N: 110; Maximum: 48.0692 min; Minimum: 35.7146 min
+
+(f) Time in system by arrival location (completed trips only)
+Arrival location    Average (min)     N       Maximum       Minimum
+------------------------------------------------------------------
+Air terminal 1        51.9273         1120   112.2936    17.7385
+Air terminal 2        45.5444          784   147.0041    13.9285
+Car rental            41.7239         1838    88.2891    11.5316
+
+Simulation ended at 4800.0000 min (80.0000 h).
+Queue delay is measured when boarding starts; time in system is
+reported when a passenger is unloaded at the destination.
+
+Internal verification
+[PASS] Capacity: maximum 20; limit 20 people
+[PASS] Conservation: arrivals=3778, completed=3742,
+       queued=20, onboard=16, boarding=0
+[PASS] State invariants: 12268 handled events checked
+[PASS] Minimum stop: completed stops >= 5.0000 min
+[PASS] Minimum loop: 35.7146 min; bound 35.0000 min
+[PASS] Simulation horizon: 4800.0000 min
+All internal checks passed (not statistical validation).

@@ -1,0 +1,125 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+\fi
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{needspace}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\definecolor{codebg}{RGB}{247,247,247}
+\definecolor{codecomment}{RGB}{35,110,55}
+\definecolor{codekeyword}{RGB}{20,55,130}
+\definecolor{codestring}{RGB}{145,55,20}
+
+\lstdefinestyle{cstyle}{
+  language=C,
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\fontsize{7.2}{8.2}\selectfont,
+  keywordstyle=\color{codekeyword}\bfseries,
+  commentstyle=\color{codecomment},
+  stringstyle=\color{codestring},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  frame=single,
+  rulecolor=\color{gray!45},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4
+}
+\lstdefinestyle{outstyle}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\fontsize{7.2}{8.5}\selectfont,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  frame=single,
+  rulecolor=\color{gray!45},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{TUBES I -- Simulasi Antrian Perjalanan Bus}
+\rhead{SIMLIB dan C}
+\cfoot{\thepage}
+\setlength{\headheight}{13pt}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries TUBES I}\par\vspace{3pt}
+  {\large\bfseries Membuat Simulasi Antrian Perjalanan Bus}\par\vspace{5pt}
+  {\normalsize Soal 2.38 -- Simulation Modeling and Analysis}\par
+\end{center}
+
+\noindent\textbf{Nama/NIM:} M. Hazim R. Prajoda / 13523009\hfill
+\textbf{Anggota 2:} Fajar Kurniawan / 13523027
+
+\vspace{8pt}
+\section*{Deskripsi Masalah dan Interpretasi Model}
+
+\begin{center}
+  \resizebox{0.7\linewidth}{!}{\input{car_rental_figure.tex}}
+\end{center}
+
+
+
+Model mensimulasikan layanan bus pada sistem penyewaan mobil yang memiliki tiga lokasi: terminal udara 1, terminal udara 2, dan car rental (lokasi 3). Kedatangan orang di lokasi 1, 2, dan 3 merupakan proses Poisson independen dengan laju berturut-turut 14, 10, dan 24 orang per jam. Setiap lokasi memiliki satu antrian FIFO dengan kapasitas tidak terbatas. Orang yang datang di terminal 1 atau 2 selalu menuju car rental. Orang yang datang di car rental menuju terminal 1 dengan probabilitas 0,583 dan menuju terminal 2 dengan probabilitas 0,417.
+
+Bus berkapasitas 20 orang, bergerak dengan kecepatan 30 mil/jam, dan pada awal simulasi berada di lokasi 3. Bus langsung berangkat berlawanan arah jarum jam dengan urutan lokasi $3\rightarrow1\rightarrow2\rightarrow3$. Berdasarkan jarak pada gambar soal, jarak tempuh antar-lokasi dalam urutan tersebut adalah 4,5 mil, 1 mil, dan 4,5 mil. Dengan demikian, waktu perjalanan bus berturut-turut adalah 0,15 jam, 1/30 jam, dan 0,15 jam.
+
+Saat tiba di suatu lokasi, bus menurunkan semua penumpang tujuan lokasi tersebut secara FIFO, lalu menaikkan orang dari antrian FIFO sampai bus penuh atau antrian habis. Waktu turun per orang berdistribusi uniform 16--24 detik dan waktu naik uniform 15--25 detik. Bus berhenti sekurang-kurangnya 5 menit. Sebelum batas ini, kedatangan baru dapat dilayani saat bus menunggu. Jika batas tercapai saat pelayanan berlangsung, unloading tetap diselesaikan lalu boarding dilanjutkan sampai antrian kosong atau bus penuh; kedatangan selama rangkaian ini dapat ikut dilayani. Sesudah batas 5 menit, bus langsung berangkat ketika rangkaian selesai, tanpa menunggu kedatangan baru.
+
+Simulasi dimulai dari keadaan kosong selama 80 jam tanpa warm-up. Delay diukur sejak kedatangan sampai boarding dimulai; waktu dalam sistem sejak kedatangan sampai penumpang selesai diturunkan, hanya untuk perjalanan selesai sebelum akhir simulasi. Statistik meliputi panjang dan delay antrian, jumlah orang di bus, durasi stop dan loop, serta waktu dalam sistem per lokasi kedatangan. Stop dan loop hanya dicatat jika selesai sebelum akhir simulasi. Keberangkatan awal pada waktu 0 menjadi acuan loop pertama, bukan sampel stop berdurasi nol. Stream SIMLIB 1--3 untuk interarrival lokasi 1--3, stream 4 untuk unloading, stream 5 untuk loading, dan stream 6 untuk tujuan dari lokasi 3.
+
+\noindent\textbf{Berkas model:} C dan SIMLIB; parameter demo: 80 jam, laju 14/10/24 orang per jam, kapasitas 20, dan kecepatan 30 mil/jam. Waktu internal dalam jam, hasil waktu ditampilkan dalam menit. CLI: \texttt{./tubes1 [input [output]]}; default \texttt{tubes1.in}/\texttt{tubes1.out}. Output juga memuat cek kapasitas, konservasi (termasuk orang yang sedang boarding), state, minimum stop/loop, dan horizon; cek internal ini bukan validasi statistik.
+
+\newpage
+\section*{Source Code Program (C + SIMLIB)}
+\noindent Source dari \texttt{tubes1.c} disajikan berurutan menurut tanggung jawabnya.
+Nomor baris mengikuti file asli; seluruh kode ditampilkan tanpa perubahan.
+
+\Needspace{6\baselineskip}
+\subsection*{A. Setup dan Definisi Model}
+\noindent Library, konstanta, parameter, state bus, pemetaan list, dan deklarasi fungsi.
+\lstinputlisting[style=cstyle,firstline=1,lastline=121,firstnumber=1]{tubes1.c}
+
+\Needspace{6\baselineskip}
+\subsection*{B. Pembacaan dan Validasi Input}
+\noindent Pembacaan token utuh serta pemeriksaan format dan domain parameter.
+\lstinputlisting[style=cstyle,firstline=122,lastline=192,firstnumber=122]{tubes1.c}
+
+\Needspace{6\baselineskip}
+\subsection*{C. Fungsi Simulasi dan Penanganan Event}
+\noindent Penjadwalan kedatangan, unloading, boarding, waktu berhenti, dan keberangkatan bus.
+\lstinputlisting[style=cstyle,firstline=193,lastline=402,firstnumber=193]{tubes1.c}
+
+\Needspace{6\baselineskip}
+\subsection*{D. Statistik, Output, dan Verifikasi}
+\noindent Penyajian statistik dalam menit serta pemeriksaan konsistensi internal model.
+\lstinputlisting[style=cstyle,firstline=403,lastline=583,firstnumber=403]{tubes1.c}
+
+\Needspace{12\baselineskip}
+\subsection*{E. Program Utama}
+\noindent CLI input/output, pembacaan parameter, inisialisasi, event loop, dan pelaporan akhir.
+\lstinputlisting[style=cstyle,firstline=584,lastline=721,firstnumber=584]{tubes1.c}
+
+\newpage
+\section*{Output Program}
+\lstinputlisting[style=outstyle]{tubes1.out}
+
+\end{document}
